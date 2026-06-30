@@ -11,6 +11,7 @@ public class Finish : MonoBehaviour
         {
             Time.timeScale = 0;
             winUI.SetActive(true);
+            winUI.GetComponent<WinMenu>().ShowWin();
         }
     }
 }

@@ -7,6 +7,7 @@ public class Player : MonoBehaviour
 {
     public GameObject winUI;
     public GameObject pauseUI;
+    public GameObject DieUI;
     public GameObject finish;
     public int health = 3;
     public Image[] hearts;
@@ -19,6 +20,12 @@ public class Player : MonoBehaviour
 
     private Rigidbody2D rb;
     private bool isGrounded;
+    private AudioSource audioSource;
+    public AudioClip jumpClip;
+    public AudioClip hurtClip;
+    public AudioClip dieClip;
+    public AudioClip killClip;
+    public AudioClip winClip;
 
     private Animator animator;
 
@@ -28,11 +35,13 @@ public class Player : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        DieUI.SetActive(false);
         winUI.SetActive(false);
         pauseUI.SetActive(false);
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        audioSource = GetComponent<AudioSource>();
 
         UpdateHearts();
     }
@@ -47,6 +56,7 @@ public class Player : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
         {
             rb.velocity = new Vector2(rb.velocity.x, jump);
+            PlaySFX(jumpClip);
         }
 
         SetAnimation(moveInput);
@@ -83,13 +93,27 @@ public class Player : MonoBehaviour
     {
         if(collision.gameObject.tag == "Damage")
         {
+            Enemy enemy = collision.gameObject.GetComponent<Enemy>();
+            if(enemy != null)
+            {
+                if(enemy.transform.position.y + 0.3f < transform.position.y)
+                {
+                    PlaySFX(killClip);
+                    ScoreManager.AddScore(100);
+                    Destroy(enemy.gameObject);
+                    return;
+                }
+            }
+
             health -= 1;
             UpdateHearts();
             rb.velocity = new Vector2(rb.velocity.x, jump);
             StartCoroutine(BlinkRed());
+            PlaySFX(hurtClip);
 
             if(health <= 0)
             {
+                PlaySFX(dieClip);
                 Die();
             }
         }
@@ -102,6 +126,7 @@ public class Player : MonoBehaviour
 
         if (collision.gameObject.tag == "Finish")
         {
+            PlaySFX(winClip);
             Time.timeScale = 0;
             winUI.SetActive(true);
         }
@@ -126,7 +151,14 @@ public class Player : MonoBehaviour
 
     private void Die()
     {
-        UnityEngine.SceneManagement.SceneManager.LoadScene("GameScene");
+        Time.timeScale = 0;
+        DieUI.SetActive(true);
+    }
+
+    private void PlaySFX(AudioClip audioClip)
+    {
+        audioSource.clip = audioClip;
+        audioSource.Play();
     }
 }
 
