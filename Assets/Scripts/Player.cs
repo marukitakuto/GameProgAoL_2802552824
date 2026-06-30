@@ -5,6 +5,9 @@ using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
+    public GameObject winUI;
+    public GameObject pauseUI;
+    public GameObject finish;
     public int health = 3;
     public Image[] hearts;
     public float speed = 5f;
@@ -25,6 +28,8 @@ public class Player : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        winUI.SetActive(false);
+        pauseUI.SetActive(false);
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
@@ -35,6 +40,7 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+       
         float moveInput = Input.GetAxis("Horizontal");
         rb.velocity = new Vector2(moveInput * speed, rb.velocity.y);
 
@@ -87,6 +93,18 @@ public class Player : MonoBehaviour
                 Die();
             }
         }
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            pauseUI.SetActive(true);
+            Time.timeScale = 0;
+        }
+
+        if (collision.gameObject.tag == "Finish")
+        {
+            Time.timeScale = 0;
+            winUI.SetActive(true);
+        }
     }
 
     private void UpdateHearts()
@@ -96,6 +114,8 @@ public class Player : MonoBehaviour
             hearts[i].enabled = i < health;
         }
     }
+
+
 
     private IEnumerator BlinkRed()
     {
