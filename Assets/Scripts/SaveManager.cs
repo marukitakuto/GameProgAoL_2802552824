@@ -7,6 +7,14 @@ public class SaveManager : MonoBehaviour
     public Transform player;
     public Player playerScript;
 
+    void Start()
+    {
+        if (PlayerPrefs.GetInt("LoadGame", 0) == 1)
+        {
+            LoadGame();
+            PlayerPrefs.SetInt("LoadGame", 0);
+        }
+    }
     public void SaveGame()
     {
         PlayerPrefs.SetFloat("PlayerX", player.position.x);
