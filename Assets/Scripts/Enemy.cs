@@ -1,33 +1,37 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
     public float speed = 2f;
-    public Transform[] points;
 
-    private int i;
+    private int direction = 1;
+    private Rigidbody2D rb;
     private SpriteRenderer spriteRenderer;
-    // Start is called before the first frame update
+
     void Start()
     {
+        rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
-    // Update is called once per frame
     void Update()
     {
-        if (Vector2.Distance(transform.position, points[i].position) < 0.25f)
-        {
-            i++;
-            if (i == points.Length)
-            {
-                i = 0;
-            }
-        }
-        transform.position = Vector2.MoveTowards(transform.position, points[i].position, speed * Time.deltaTime);
+        rb.velocity = new Vector2(direction * speed, rb.velocity.y);
 
-        spriteRenderer.flipX = (transform.position.x - points[i].position.x) < 0;
+        // Flip sprite based on direction
+        spriteRenderer.flipX = direction > 0;
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Wall"))
+        {
+            Turn();
+        }
+    }
+
+    void Turn()
+    {
+        direction *= -1;
     }
 }
