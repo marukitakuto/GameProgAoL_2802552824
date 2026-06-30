@@ -47,7 +47,7 @@ public class Player : MonoBehaviour
 
     private void FixedUpdate()
     {
-        isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
+        isGrounded = Physics2D.Raycast(groundCheck.position,Vector2.down,0.3f,groundLayer);
     }
     private void SetAnimation(float moveInput)
     {
