@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-
+    public int health = 9;
     public float speed = 5f;
     public float jump = 10f;
     public Transform groundCheck;
@@ -15,11 +15,15 @@ public class Player : MonoBehaviour
     private bool isGrounded;
 
     private Animator animator;
+
+    private SpriteRenderer spriteRenderer;
+
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
     // Update is called once per frame
@@ -61,6 +65,33 @@ public class Player : MonoBehaviour
         {
             animator.Play("Fall");
         }
-}
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if(collision.gameObject.tag == "Damage")
+        {
+            health -= 3;
+            rb.velocity = new Vector2(rb.velocity.x, jump);
+            StartCoroutine(BlinkRed());
+
+            if(health <= 0)
+            {
+                Die();
+            }
+        }
+    }
+
+    private IEnumerator BlinkRed()
+    {
+        spriteRenderer.color = Color.red;
+        yield return new WaitForSeconds(0.1f);
+        spriteRenderer.color = Color.white;
+    }
+
+    private void Die()
+    {
+        UnityEngine.SceneManagement.SceneManager.LoadScene("GameScene");
+    }
 }
 
