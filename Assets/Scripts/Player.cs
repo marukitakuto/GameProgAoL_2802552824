@@ -13,10 +13,13 @@ public class Player : MonoBehaviour
 
     private Rigidbody2D rb;
     private bool isGrounded;
+
+    private Animator animator;
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>();
     }
 
     // Update is called once per frame
@@ -29,11 +32,35 @@ public class Player : MonoBehaviour
         {
             rb.velocity = new Vector2(rb.velocity.x, jump);
         }
+
+        SetAnimation(moveInput);
     }
 
     private void FixedUpdate()
     {
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
     }
+    private void SetAnimation(float moveInput)
+    {
+        if (isGrounded)
+        {
+            if (moveInput == 0)
+            {
+                animator.Play("Idle");
+            }
+            else
+            {
+                animator.Play("Run");
+            }
+        }
+        else if (rb.velocity.y > 0)
+        {
+            animator.Play("Jump");
+        }
+        else
+        {
+            animator.Play("Fall");
+        }
+}
 }
 
