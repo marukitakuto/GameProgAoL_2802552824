@@ -1,10 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
-    public int health = 9;
+    public int health = 3;
+    public Image[] hearts;
     public float speed = 5f;
     public float jump = 10f;
     public Transform groundCheck;
@@ -18,12 +20,15 @@ public class Player : MonoBehaviour
 
     private SpriteRenderer spriteRenderer;
 
+
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+
+        UpdateHearts();
     }
 
     // Update is called once per frame
@@ -71,7 +76,8 @@ public class Player : MonoBehaviour
     {
         if(collision.gameObject.tag == "Damage")
         {
-            health -= 3;
+            health -= 1;
+            UpdateHearts();
             rb.velocity = new Vector2(rb.velocity.x, jump);
             StartCoroutine(BlinkRed());
 
@@ -79,6 +85,14 @@ public class Player : MonoBehaviour
             {
                 Die();
             }
+        }
+    }
+
+    private void UpdateHearts()
+    {
+        for (int i = 0; i < hearts.Length; i++)
+        {
+            hearts[i].enabled = i < health;
         }
     }
 
